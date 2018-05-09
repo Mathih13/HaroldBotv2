@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "node deploy.js"
   },
   "author": "Mathias Hartveit",
   "license": "ISC",
