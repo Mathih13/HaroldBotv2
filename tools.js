@@ -69,6 +69,18 @@ Tools.prototype.randomImgFromFolder = (folderPath) => {
 };
 
 
+Tools.prototype.msgContainsWord = (msg, words) => {
+    let string = msg.content.split(" ");
+    for (let i = 0; i < string.length; i++) {
+        for (let k = 0; k < words.length; k++) {
+            if (string[i] === words[k]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function loadImages () {
 
     fs.readdir(smugFolder, (err, files) => {

@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const tools = require('./tools');
 const reactions = require('./msgreactions')
-
+const tokens = require('./tokens');
 
 
 tools.setClient(client);
@@ -15,4 +15,6 @@ client.on('ready', () => {
 });
 
 
-client.login('NDQxNTcxOTMzNjA4NDc2Njcy.DcyNfA.zYXjswH12cWEvhcyviXRcxEZ4_4');
+//client.login('tokens.prod');
+
+client.login(tokens.test);

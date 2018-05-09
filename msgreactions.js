@@ -3,6 +3,8 @@ const tools = require('./tools');
 const axios = require('axios');
 const constants = require('./constants');
 const settings = require('./settings')
+const tokens = require('./tokens')
+var parseXML = require('xml-parser');
 
 let client;
 
@@ -77,6 +79,18 @@ Reactions.prototype.registerMessageEvents = () => {
         });
     }
 
+    if(msg.content === c + 'cat') {
+        msg.channel.startTyping();
+        axios.get('http://thecatapi.com/api/images/get?format=xml')
+            .then(res => {
+                msg.channel.stopTyping();
+                let parsed = parseXML(res.data);
+                let image_root = parsed.root.children[0].children[0].children[0].children[0].content;
+                tools.typeMessage(msg.channel, { files: [image_root] });
+            })
+            .catch(err => console.log(err.message));
+    }
+
     if (msg.content === c + 'cat') {
       return;
       msg.channel.startTyping();
@@ -89,19 +103,24 @@ Reactions.prototype.registerMessageEvents = () => {
 
 
     if (msg.content.includes('her') || msg.content.includes('she')) {
-      if (tools.chancePercentage(settings.easterEggChance.val)) {
-        if (tools.chancePercentage(50)) {
-          tools.typeMessage(msg.channel, '>her');
-        } else {
-          tools.typeMessage(msg.channel, '>she');
+        if (tools.msgContainsWord(msg, ['her', 'she', 'female'])) {
+            if (tools.chancePercentage(settings.easterEggChance.val)) {
+                if (tools.chancePercentage(50)) {
+                    tools.typeMessage(msg.channel, '>her');
+                } else {
+                    tools.typeMessage(msg.channel, '>she');
+                }
+            }
         }
-      }
     }
 
     if (msg.content.includes('male')) {
-      if (tools.chancePercentage(settings.easterEggChance.val)) {
-        tools.typeMessage(msg.channel, '>male(female)');
-      }
+        if (tools.msgContainsWord(msg, ['male', 'female'])) {
+            if (tools.chancePercentage(settings.easterEggChance.val)) {
+                tools.typeMessage(msg.channel, '>male(female)');
+            }
+        }
+
     }
     
   });
