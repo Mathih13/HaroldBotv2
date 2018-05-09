@@ -14,7 +14,7 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-
-//client.login('tokens.prod');
-
-client.login(tokens.test);
+if (process.argv[2] == 'prod')
+  client.login(tokens.prod);
+else
+  client.login(tokens.test);
