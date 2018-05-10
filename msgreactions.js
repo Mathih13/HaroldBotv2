@@ -3,7 +3,7 @@ const tools = require('./tools');
 const axios = require('axios');
 const constants = require('./constants');
 const settings = require('./settings')
-const tokens = require('./tokens')
+const tokens = require('../tokens')
 var parseXML = require('xml-parser');
 
 let client;
