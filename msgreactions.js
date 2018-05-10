@@ -92,13 +92,30 @@ Reactions.prototype.registerMessageEvents = () => {
     }
 
     if (msg.content === c + 'cat') {
-      return;
       msg.channel.startTyping();
       axios.get('https://cataas.com/cat', {responseType: 'blob'})
           .then(res => {
             msg.channel.stopTyping();
            tools.typeMessage(msg.channel, { files: [res.data] })
           })
+    }
+
+
+    if (msg.content === c + 'advice') {
+        msg.channel.startTyping();
+        axios.get('http://api.adviceslip.com/advice')
+            .then(res => {
+                msg.channel.stopTyping();
+                tools.typeMessage(msg.channel, {
+                    embed: {
+                        author: {
+                            name: 'Harold Says',
+                            icon_url: client.user.avatarURL,
+                        },
+                        description: res.data.slip.advice
+                    }
+                }, tools.randomBetween(500, 1000))
+            })
     }
 
 
