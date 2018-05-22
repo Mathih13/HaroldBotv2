@@ -42,8 +42,10 @@ Tools.prototype.chancePercentage = (p) => {
 };
 
 Tools.prototype.typeMessage = (channel, message, override_time) => {
-  let wait = message.length * (settings.avgTypingSpeed.val);
-  if (wait > settings.typingSpeedThreshold.val) wait = settings.typingSpeedThreshold.val;
+  let config = settings.values[channel.guild.id].config;
+
+  let wait = message.length * (config.avgTypingSpeed.val);
+  if (wait > config.typingSpeedThreshold.val) wait = config.typingSpeedThreshold.val;
 
   if(override_time) wait = override_time;
   channel.startTyping();

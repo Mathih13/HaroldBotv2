@@ -3,8 +3,6 @@ const tools = require('./tools');
 const axios = require('axios');
 const constants = require('./constants');
 const settings = require('./settings')
-const tokens = require('../tokens')
-var parseXML = require('xml-parser');
 
 let client;
 
@@ -14,136 +12,55 @@ Reactions.prototype.setClient = (c) => client = c;
 // Refactor command system to:
 // https://anidiotsguide_old.gitbooks.io/discord-js-bot-guide/content/coding-guides/a-basic-command-handler.html
 Reactions.prototype.registerMessageEvents = () => {
-  let c = tools.Command();
 
-  client.on('message', msg => {
-    if (msg.author.bot) return;
+  client.on('message', message => {
+    if (message.author.bot) return;
+    let guildID = message.channel.guild.id;
+    checkForPhrases(message);
+    if (message.content.indexOf(settings.values[guildID].prefix) !== 0) return;
 
-    if (msg.content.includes('@everyone')) {
-      tools.typeMessage(msg.channel, { files: [tools.randomImgFromFolder(constants.EVERYONE)] }, 2250)
+    const args = message.content.slice(settings.values[guildID].prefix.length).trim().split(/ +/g);
+    const command = args.shift().toLowerCase();
+
+    try {
+      let commandFile = require(`./commands/${command}.js`);
+      commandFile.run(client, message, args);
+    } catch (err) {
+      console.error(err);
     }
-    
-    if (msg.content === c + 'smug') {
-      tools.typeMessage(msg.channel, { files: [tools.randomImgFromFolder(constants.SMUG)] });
-    }
-
-    if (msg.content === c + 'commands') {
-        msg.channel.send({
-            embed: {
-                author: {
-                    name: client.user.username,
-                    icon_url: client.user.avatarURL,
-                },
-                fields: [
-                    {
-                      name: 'smug',
-                      value: 'Post a smug anime girl'
-                    },
-                    {
-                        name: 'dog',
-                        value: 'Post a random doggo'
-                    },
-                    {
-                        name: 'cat',
-                        value: 'COMING SOON'
-                    },
-                ]
-            }
-        })
-    }
-
-    if (msg.content === c + 'settings') {
-      let arr = [];
-      for (let key in settings) {
-        let current = settings[key];
-        arr.push({ key: key, name: current.name, desc: current.desc, val: current.val.toString() });
-      }
-      msg.channel.send({
-          embed: {
-              author: {
-                  name: client.user.username,
-                  icon_url: client.user.avatarURL,
-              },
-              title: 'Settings',
-              fields: arr.map (s => { return {name: s.name,  value: s.val} })
-          }
-      })
-    }
-
-    if(msg.content === c + 'dog') {
-      msg.channel.startTyping();
-      axios.get('https://dog.ceo/api/breeds/image/random')
-        .then(res => {
-          msg.channel.stopTyping();
-          tools.typeMessage(msg.channel, {files: [res.data.message]});
-        });
-    }
-
-    if(msg.content === c + 'cat') {
-        msg.channel.startTyping();
-        axios.get('http://thecatapi.com/api/images/get?format=xml')
-            .then(res => {
-                msg.channel.stopTyping();
-                let parsed = parseXML(res.data);
-                let image_root = parsed.root.children[0].children[0].children[0].children[0].content;
-                tools.typeMessage(msg.channel, { files: [image_root] });
-            })
-            .catch(err => console.log(err.message));
-    }
-
-    if (msg.content === c + 'cat') {
-      msg.channel.startTyping();
-      axios.get('https://cataas.com/cat', {responseType: 'blob'})
-          .then(res => {
-            msg.channel.stopTyping();
-           tools.typeMessage(msg.channel, { files: [res.data] })
-          })
-    }
-
-
-    if (msg.content === c + 'advice') {
-        msg.channel.startTyping();
-        axios.get('http://api.adviceslip.com/advice')
-            .then(res => {
-                msg.channel.stopTyping();
-                tools.typeMessage(msg.channel, {
-                    embed: {
-                        author: {
-                            name: 'Harold Says',
-                            icon_url: client.user.avatarURL,
-                        },
-                        description: res.data.slip.advice
-                    }
-                }, tools.randomBetween(500, 1000))
-            })
-    }
-
-
-    if (msg.content.includes('her') || msg.content.includes('she')) {
-        if (tools.msgContainsWord(msg, ['her', 'she', 'female'])) {
-            if (tools.chancePercentage(settings.easterEggChance.val)) {
-                if (tools.chancePercentage(50)) {
-                    tools.typeMessage(msg.channel, '>her');
-                } else {
-                    tools.typeMessage(msg.channel, '>she');
-                }
-            }
-        }
-    }
-
-    if (msg.content.includes('male')) {
-        if (tools.msgContainsWord(msg, ['male', 'female'])) {
-            if (tools.chancePercentage(settings.easterEggChance.val)) {
-                tools.typeMessage(msg.channel, '>male(female)');
-            }
-        }
-
-    }
-    
-  });
-  
-  
+  })
 };
 
 
 module.exports = new Reactions();
+
+
+
+function checkForPhrases(msg) {
+
+  if (msg.content.includes('@everyone')) {
+    tools.typeMessage(msg.channel, { files: [tools.randomImgFromFolder(constants.EVERYONE)] }, 2250)
+    return;
+  }
+
+  if (msg.content.includes('her') || msg.content.includes('she')) {
+    if (tools.msgContainsWord(msg, ['her', 'she', 'female'])) {
+      if (tools.chancePercentage(settings.values[msg.channel.guild.id].config.easterEggChance.val)) {
+        if (tools.chancePercentage(50)) {
+          tools.typeMessage(msg.channel, '>her');
+        } else {
+          tools.typeMessage(msg.channel, '>she');
+        }
+      }
+    }
+  }
+
+  if (msg.content.includes('male')) {
+    if (tools.msgContainsWord(msg, ['male', 'female'])) {
+      if (tools.chancePercentage(settings.values[msg.channel.guild.id].config.easterEggChance.val)) {
+        tools.typeMessage(msg.channel, '>male(female)');
+      }
+    }
+
+  }
+}
