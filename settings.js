@@ -5,7 +5,7 @@ let Settings = function () {
 };
 
 Settings.prototype.defaultSettings = {
-  prefix: 1,
+  prefix: "!",
   config: {
     avgTypingSpeed: {
       name: 'Average Typing Speed',
@@ -59,14 +59,14 @@ Settings.prototype.updateGuildAvgTypingSpeed = function (guildID, newSpeed) {
   u['/guilds/' + guildID + '/config/avgTypingSpeed/val'] = newSpeed;
   firebase.database().ref().update(u)
     .then(res => Settings.prototype.loadGuildSettings(guildID));
-}
+};
 
 Settings.prototype.updateGuildEasterEggChance = function (guildID, newVal) {
   let u = {};
   u['/guilds/' + guildID + '/config/easterEggChance/val'] = newVal;
   firebase.database().ref().update(u)
     .then(res => Settings.prototype.loadGuildSettings(guildID));
-}
+};
 
 Settings.prototype.updateGuildPrefix = function (guildID, newPrefix) {
   let u = {};

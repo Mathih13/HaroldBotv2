@@ -1,18 +1,20 @@
 const settings = require('../settings')
 
 exports.run = (client, message, args) => {
-  if (!args)
-    printAllSettings();
+  if (!args[0])
+    printAllSettings(client, message);
   else
     editSettings(message, args);
 };
 
 function editSettings(message, args) {
   if (args[0] === "avg")
-
+    settings.updateGuildAvgTypingSpeed(args[1])
+  if (args[0] === "easter")
+    settings.updateGuildEasterEggChance(args[1])
 }
 
-function printAllSettings() {
+function printAllSettings(client, message) {
   let arr = [];
   let guildSettings = settings.values[message.channel.guild.id].config;
   for (let key in guildSettings) {
