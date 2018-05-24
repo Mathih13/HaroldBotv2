@@ -8,7 +8,7 @@ Settings.prototype.defaultSettings = {
   prefix: "!",
   config: {
     avgTypingSpeed: {
-      name: 'Average Typing Speed',
+      name: 'Average Typing Speed (avg)',
       val: 0.1 * 1000,
       desc: 'The calculation for average typing speed'
     },
@@ -18,7 +18,7 @@ Settings.prototype.defaultSettings = {
       desc: 'The maximum time that can be spent typing'
     },
     easterEggChance: {
-      name: 'Easter Egg Chance (%)',
+      name: 'Easter Egg Chance (easter)',
       val: 3,
       desc: 'The percentage chance for easter egg responses to certain words or phrases'
     },

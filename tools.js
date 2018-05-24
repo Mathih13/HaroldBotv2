@@ -81,7 +81,9 @@ Tools.prototype.msgContainsWord = (msg, words) => {
         }
     }
     return false;
-}
+};
+
+Tools.prototype.isAdmin = (message) => message.channel.permissionsFor(message.author).has("ADMINISTRATOR");
 
 function loadImages () {
 

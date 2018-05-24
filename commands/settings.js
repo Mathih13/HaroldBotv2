@@ -1,4 +1,5 @@
 const settings = require('../settings')
+const tools = require('../tools');
 
 exports.run = (client, message, args) => {
   if (!args[0])
@@ -8,10 +9,16 @@ exports.run = (client, message, args) => {
 };
 
 function editSettings(message, args) {
+  let guild = message.channel.guild.id;
   if (args[0] === "avg")
-    settings.updateGuildAvgTypingSpeed(args[1])
+    settings.updateGuildAvgTypingSpeed(guild, args[1]);
   if (args[0] === "easter")
-    settings.updateGuildEasterEggChance(args[1])
+    settings.updateGuildEasterEggChance(guild, args[1]);
+  if (args[0] === "reset")
+    if (tools.isAdmin(message))
+      tools.typeMessage(message.channel, 'Yes!');
+
+  //tools.typeMessage(message.channel, 'Settings updated')
 }
 
 function printAllSettings(client, message) {
