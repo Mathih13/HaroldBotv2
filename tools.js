@@ -10,9 +10,10 @@ let command = '!';
 
 let smugFolder = path.resolve(__dirname, './assets/smug/');
 let everyoneFolder = path.resolve(__dirname, './assets/everyone/');
+let loadingText = require('./assets/loadingText');
 let smugImages = [];
 let everyoneImages = [];
-loadImages();
+loadAssets();
 
 Tools.prototype.registerCommand = (newCommand) => command = newCommand;
 
@@ -21,9 +22,13 @@ Tools.prototype.Command = () => command;
 Tools.prototype.setClient = (c) => client = c;
 
 Tools.prototype.sendMessage = (channel, message) => {
-  channel.send(message);
-  channel.stopTyping();
-  return null;
+  return new Promise((resolve) => {
+    channel.send(message)
+      .then(msg => {
+        channel.stopTyping();
+        resolve(msg);
+      })
+  })
 };
 
 Tools.prototype.sendMessageWithArgs = (channel, message, args) => {
@@ -83,9 +88,27 @@ Tools.prototype.msgContainsWord = (msg, words) => {
     return false;
 };
 
+Tools.prototype.loadingLine = () => {
+  return loadingText[Math.floor(Math.random()*loadingText.length)] + '...'
+};
+
+Tools.prototype.startLoading = (channel) => {
+  return new Promise(resolve => {
+    let loading;
+    Tools.prototype.sendMessage(channel, `${Tools.prototype.loadingLine()}`)
+      .then(msg => {
+        loading = msg
+        resolve(loading);
+      });
+  })
+
+};
+
+
+
 Tools.prototype.isAdmin = (message) => message.channel.permissionsFor(message.author).has("ADMINISTRATOR");
 
-function loadImages () {
+function loadAssets () {
 
     fs.readdir(smugFolder, (err, files) => {
         files.forEach(file => {
